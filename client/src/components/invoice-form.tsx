@@ -230,17 +230,18 @@ export default function InvoiceForm({ supplier, onSubmit, onCancel }: InvoiceFor
     <Form {...form}>
       <form id="invoice-form" onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-6">
         {/* Invoice Details */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <FormField
             control={form.control}
             name="invoiceNumber"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Invoice Number</FormLabel>
+                <FormLabel className="text-sm">Invoice Number</FormLabel>
                 <FormControl>
                   <Input
                     placeholder="INV-2025-004"
                     {...field}
+                    className="text-sm"
                     data-testid="input-invoice-number"
                   />
                 </FormControl>
@@ -249,11 +250,12 @@ export default function InvoiceForm({ supplier, onSubmit, onCancel }: InvoiceFor
             )}
           />
           <FormItem>
-            <FormLabel>Date</FormLabel>
+            <FormLabel className="text-sm">Date</FormLabel>
             <FormControl>
               <Input
                 type="date"
                 defaultValue={new Date().toISOString().split("T")[0]}
+                className="text-sm"
                 data-testid="input-invoice-date"
               />
             </FormControl>
@@ -262,8 +264,8 @@ export default function InvoiceForm({ supplier, onSubmit, onCancel }: InvoiceFor
 
         {/* Invoice Lines Section */}
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h4 className="text-lg font-medium flex items-center gap-2">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <h4 className="text-base sm:text-lg font-medium flex items-center gap-2">
               <List className="w-4 h-4" />
               Invoice Lines
             </h4>
@@ -271,6 +273,7 @@ export default function InvoiceForm({ supplier, onSubmit, onCancel }: InvoiceFor
               type="button"
               variant="secondary"
               size="sm"
+              className="w-full sm:w-auto text-sm"
               onClick={addInvoiceLine}
               data-testid="button-add-line"
             >
@@ -294,8 +297,8 @@ export default function InvoiceForm({ supplier, onSubmit, onCancel }: InvoiceFor
 
           {/* Invoice Total */}
           <div className="border-t border-border pt-4">
-            <div className="flex justify-end">
-              <div className="bg-card border border-border rounded-lg p-4 min-w-64">
+            <div className="flex justify-center sm:justify-end">
+              <div className="bg-card border border-border rounded-lg p-4 w-full sm:min-w-64 sm:w-auto">
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Subtotal:</span>
@@ -310,7 +313,7 @@ export default function InvoiceForm({ supplier, onSubmit, onCancel }: InvoiceFor
                     </span>
                   </div>
                   <div className="border-t border-border pt-2">
-                    <div className="flex justify-between font-semibold text-lg">
+                    <div className="flex justify-between font-semibold text-base sm:text-lg">
                       <span>Total:</span>
                       <span data-testid="text-total">
                         ${total.toFixed(2)}
@@ -324,10 +327,11 @@ export default function InvoiceForm({ supplier, onSubmit, onCancel }: InvoiceFor
         </div>
 
         {/* Form Actions */}
-        <div className="flex items-center justify-end gap-3 pt-6 border-t border-border">
+        <div className="flex flex-col sm:flex-row items-center justify-end gap-3 pt-6 border-t border-border">
           <Button
             type="button"
             variant="ghost"
+            className="w-full sm:w-auto text-sm"
             onClick={onCancel}
             disabled={createInvoiceMutation.isPending}
             data-testid="button-cancel-invoice"
@@ -336,6 +340,7 @@ export default function InvoiceForm({ supplier, onSubmit, onCancel }: InvoiceFor
           </Button>
           <Button
             type="submit"
+            className="w-full sm:w-auto text-sm"
             disabled={createInvoiceMutation.isPending}
             data-testid="button-submit-invoice"
           >

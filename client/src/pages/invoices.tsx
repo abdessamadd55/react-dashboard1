@@ -32,10 +32,10 @@ export default function Invoices() {
 
   if (isLoading) {
     return (
-      <div className="p-6">
-        <div className="animate-pulse space-y-6">
+      <div className="p-4 sm:p-6 pb-20 lg:pb-6">
+        <div className="animate-pulse space-y-4 sm:space-y-6">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="bg-card rounded-lg border border-border p-6 shadow-sm">
+            <div key={i} className="bg-card rounded-lg border border-border p-4 sm:p-6 shadow-sm">
               <div className="h-6 bg-muted rounded w-1/4 mb-4"></div>
               <div className="space-y-2">
                 <div className="h-4 bg-muted rounded w-1/2"></div>
@@ -49,14 +49,15 @@ export default function Invoices() {
   }
 
   return (
-    <div className="p-6">
-      <div className="flex items-center justify-between mb-6">
+    <div className="p-4 sm:p-6 pb-20 lg:pb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Invoices</h1>
-          <p className="text-muted-foreground">Manage and track all your invoices</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Invoices</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">Manage and track all your invoices</p>
         </div>
         <Button 
           onClick={() => setIsNewInvoiceModalOpen(true)}
+          className="w-full sm:w-auto text-sm"
           data-testid="button-add-invoice"
         >
           <Plus className="w-4 h-4 mr-2" />
@@ -101,7 +102,7 @@ export default function Invoices() {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div className="flex items-center gap-2">
                     <DollarSign className="w-4 h-4 text-muted-foreground" />
                     <div>

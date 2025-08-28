@@ -70,10 +70,10 @@ export default function Items() {
 
   if (isLoading) {
     return (
-      <div className="p-6">
-        <div className="animate-pulse grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="p-4 sm:p-6 pb-20 lg:pb-6">
+        <div className="animate-pulse grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div key={i} className="bg-card rounded-lg border border-border p-6 shadow-sm">
+            <div key={i} className="bg-card rounded-lg border border-border p-4 sm:p-6 shadow-sm">
               <div className="h-6 bg-muted rounded w-3/4 mb-4"></div>
               <div className="h-4 bg-muted rounded w-1/2"></div>
             </div>
@@ -84,15 +84,15 @@ export default function Items() {
   }
 
   return (
-    <div className="p-6">
-      <div className="flex items-center justify-between mb-6">
+    <div className="p-4 sm:p-6 pb-20 lg:pb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Items</h1>
-          <p className="text-muted-foreground">Manage your inventory items and pricing</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Items</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">Manage your inventory items and pricing</p>
         </div>
         <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
           <DialogTrigger asChild>
-            <Button data-testid="button-add-item">
+            <Button className="w-full sm:w-auto text-sm" data-testid="button-add-item">
               <Plus className="w-4 h-4 mr-2" />
               Add Item
             </Button>
@@ -164,7 +164,7 @@ export default function Items() {
 
       {/* Search */}
       <div className="mb-6">
-        <div className="relative max-w-md">
+        <div className="relative max-w-full sm:max-w-md">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
           <Input
             placeholder="Search items..."
@@ -197,7 +197,7 @@ export default function Items() {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {filteredItems.map((item) => (
             <Card key={item.id} className="hover:shadow-md transition-shadow" data-testid={`item-card-${item.id}`}>
               <CardHeader>

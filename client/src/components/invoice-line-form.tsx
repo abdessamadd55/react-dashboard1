@@ -106,12 +106,12 @@ export default function InvoiceLineForm({
   const validation = getValidationMessage();
 
   return (
-    <div className="border border-border rounded-lg p-4 bg-secondary/50 invoice-line-animation" data-testid={`invoice-line-${index}`}>
-      <div className="flex items-start gap-4">
-        <div className="flex-1 grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
+    <div className="border border-border rounded-lg p-3 sm:p-4 bg-secondary/50 invoice-line-animation" data-testid={`invoice-line-${index}`}>
+      <div className="flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-4">
+        <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3">
           {/* Item Selector */}
-          <div className="md:col-span-5">
-            <Label className="block text-sm font-medium text-foreground mb-2">
+          <div className="sm:col-span-2 lg:col-span-5">
+            <Label className="block text-xs sm:text-sm font-medium text-foreground mb-2">
               Item
             </Label>
             <ItemSelector
@@ -124,8 +124,8 @@ export default function InvoiceLineForm({
           </div>
 
           {/* Price */}
-          <div className="md:col-span-3">
-            <Label className="block text-sm font-medium text-foreground mb-2">
+          <div className="lg:col-span-3">
+            <Label className="block text-xs sm:text-sm font-medium text-foreground mb-2">
               Price
             </Label>
             <Input
@@ -134,13 +134,14 @@ export default function InvoiceLineForm({
               placeholder="0.00"
               value={line.itemPrice}
               onChange={(e) => handlePriceChange(e.target.value)}
+              className="text-sm"
               data-testid={`input-item-price-${index}`}
             />
           </div>
 
           {/* Quantity */}
-          <div className="md:col-span-2">
-            <Label className="block text-sm font-medium text-foreground mb-2">
+          <div className="lg:col-span-2">
+            <Label className="block text-xs sm:text-sm font-medium text-foreground mb-2">
               Qty
             </Label>
             <Input
@@ -149,17 +150,18 @@ export default function InvoiceLineForm({
               placeholder="1"
               value={line.quantity}
               onChange={(e) => handleQuantityChange(parseInt(e.target.value) || 1)}
+              className="text-sm"
               data-testid={`input-quantity-${index}`}
             />
           </div>
 
           {/* Line Total */}
-          <div className="md:col-span-2">
-            <Label className="block text-sm font-medium text-foreground mb-2">
+          <div className="lg:col-span-2">
+            <Label className="block text-xs sm:text-sm font-medium text-foreground mb-2">
               Total
             </Label>
             <div 
-              className="px-3 py-2 bg-muted rounded-md text-sm font-medium"
+              className="px-3 py-2 bg-muted rounded-md text-xs sm:text-sm font-medium"
               data-testid={`text-line-total-${index}`}
             >
               ${line.total.toFixed(2)}
@@ -174,10 +176,10 @@ export default function InvoiceLineForm({
             variant="ghost"
             size="sm"
             onClick={onRemove}
-            className="text-destructive hover:text-destructive/80 self-end"
+            className="text-destructive hover:text-destructive/80 self-center sm:self-end"
             data-testid={`button-remove-line-${index}`}
           >
-            <Trash2 className="w-4 h-4" />
+            <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
           </Button>
         )}
       </div>

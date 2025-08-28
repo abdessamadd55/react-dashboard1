@@ -43,8 +43,8 @@ export default function Suppliers() {
   }
 
   return (
-    <div className="p-6 overflow-y-auto h-full">
-      <div className="grid gap-6">
+    <div className="p-4 sm:p-6 overflow-y-auto h-full pb-20 lg:pb-6">
+      <div className="grid gap-4 sm:gap-6">
         {suppliers?.map((supplier) => (
           <SupplierCard
             key={supplier.id}
@@ -54,15 +54,15 @@ export default function Suppliers() {
         ))}
         
         {suppliers?.length === 0 && (
-          <div className="text-center py-12">
+          <div className="text-center py-8 sm:py-12">
             <div className="text-muted-foreground mb-4">
-              <i className="fas fa-users text-4xl"></i>
+              <i className="fas fa-users text-3xl sm:text-4xl"></i>
             </div>
-            <h3 className="text-lg font-medium mb-2">No suppliers found</h3>
-            <p className="text-muted-foreground mb-4">
+            <h3 className="text-base sm:text-lg font-medium mb-2">No suppliers found</h3>
+            <p className="text-sm sm:text-base text-muted-foreground mb-4 px-4">
               Get started by adding your first supplier.
             </p>
-            <Button>
+            <Button className="text-sm">
               <Plus className="w-4 h-4 mr-2" />
               Add Supplier
             </Button>

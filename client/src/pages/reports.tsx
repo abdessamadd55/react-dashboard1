@@ -51,14 +51,14 @@ export default function Reports() {
   })).sort((a, b) => b.invoiceCount - a.invoiceCount).slice(0, 5) || [];
 
   return (
-    <div className="p-6">
+    <div className="p-4 sm:p-6 pb-20 lg:pb-6">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-foreground">Reports</h1>
-        <p className="text-muted-foreground">Overview of your business metrics and performance</p>
+        <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Reports</h1>
+        <p className="text-sm sm:text-base text-muted-foreground">Overview of your business metrics and performance</p>
       </div>
 
       {/* Key Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
         <Card data-testid="metric-total-invoices">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Invoices</CardTitle>
@@ -116,7 +116,7 @@ export default function Reports() {
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         {/* Recent Invoices */}
         <Card>
           <CardHeader>
@@ -212,7 +212,7 @@ export default function Reports() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="text-center">
               <p className="text-2xl font-bold text-primary" data-testid="inventory-total-items">
                 {totalItems}
