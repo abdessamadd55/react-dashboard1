@@ -50,9 +50,11 @@ export default function ItemSelector({
           item.name.toLowerCase() === searchTerm.toLowerCase() &&
           item.price === price
       );
-      onSelect(match || null, false);
+      if (match && match.name === searchTerm && match.price === price) {
+        onSelect(match, false);
+      }
     }
-  }, [searchTerm, price, items, onSelect]);
+  }, [searchTerm, price, items]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {

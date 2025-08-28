@@ -22,6 +22,21 @@ export default function Layout({ children }: LayoutProps) {
     { href: "/reports", icon: BarChart3, label: "Reports", active: location === "/reports" },
   ];
 
+  const getPageInfo = () => {
+    if (location === "/" || location === "/suppliers") {
+      return { title: "Suppliers", description: "Manage your suppliers and their invoices" };
+    } else if (location === "/invoices") {
+      return { title: "Invoices", description: "Track and manage all your invoices" };
+    } else if (location === "/items") {
+      return { title: "Items", description: "Manage your inventory items and pricing" };
+    } else if (location === "/reports") {
+      return { title: "Reports", description: "View business metrics and analytics" };
+    }
+    return { title: "Page Not Found", description: "The page you're looking for doesn't exist" };
+  };
+
+  const pageInfo = getPageInfo();
+
   return (
     <div className="min-h-screen flex bg-background">
       {/* Sidebar */}
@@ -62,12 +77,11 @@ export default function Layout({ children }: LayoutProps) {
         <header className="bg-card border-b border-border px-6 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-2xl font-semibold">Suppliers</h2>
+              <h2 className="text-2xl font-semibold">{pageInfo.title}</h2>
               <p className="text-muted-foreground">
-                Manage your suppliers and their invoices
+                {pageInfo.description}
               </p>
             </div>
-            {/* TODO: Add Supplier button - implement when needed */}
           </div>
         </header>
 

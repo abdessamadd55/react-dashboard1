@@ -29,10 +29,9 @@ interface InvoiceFormProps {
   supplier: SupplierWithInvoices;
   onSubmit: (data: any) => void;
   onCancel: () => void;
-  isSubmitting: boolean;
 }
 
-export default function InvoiceForm({ supplier, onSubmit, onCancel, isSubmitting }: InvoiceFormProps) {
+export default function InvoiceForm({ supplier, onSubmit, onCancel }: InvoiceFormProps) {
   const [invoiceLines, setInvoiceLines] = useState<InvoiceLine[]>([
     {
       id: crypto.randomUUID(),
@@ -303,6 +302,33 @@ export default function InvoiceForm({ supplier, onSubmit, onCancel, isSubmitting
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Form Actions */}
+        <div className="flex items-center justify-end gap-3 pt-6 border-t border-border">
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={onCancel}
+            disabled={createInvoiceMutation.isPending}
+            data-testid="button-cancel-invoice"
+          >
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            disabled={createInvoiceMutation.isPending}
+            data-testid="button-submit-invoice"
+          >
+            {createInvoiceMutation.isPending ? (
+              <>
+                <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" />
+                Creating...
+              </>
+            ) : (
+              "Create Invoice"
+            )}
+          </Button>
         </div>
       </form>
     </Form>

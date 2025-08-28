@@ -12,19 +12,9 @@ interface AddInvoiceModalProps {
 }
 
 export default function AddInvoiceModal({ supplier, isOpen, onClose }: AddInvoiceModalProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const handleSubmit = async (invoiceData: any) => {
-    setIsSubmitting(true);
-    try {
-      // This will be handled by the InvoiceForm component
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
-      onClose();
-    } catch (error) {
-      console.error("Failed to create invoice:", error);
-    } finally {
-      setIsSubmitting(false);
-    }
+  const handleSubmit = () => {
+    // This will be called after successful mutation in InvoiceForm
+    onClose();
   };
 
   return (
@@ -58,40 +48,10 @@ export default function AddInvoiceModal({ supplier, isOpen, onClose }: AddInvoic
               supplier={supplier}
               onSubmit={handleSubmit}
               onCancel={onClose}
-              isSubmitting={isSubmitting}
             />
           </div>
         </div>
 
-        {/* Modal Footer */}
-        <div className="flex items-center justify-end gap-3 p-6 border-t border-border bg-muted/30">
-          <Button
-            variant="ghost"
-            onClick={onClose}
-            disabled={isSubmitting}
-            data-testid="button-cancel-invoice"
-          >
-            Cancel
-          </Button>
-          <Button
-            type="submit"
-            form="invoice-form"
-            disabled={isSubmitting}
-            data-testid="button-submit-invoice"
-          >
-            {isSubmitting ? (
-              <>
-                <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" />
-                Creating...
-              </>
-            ) : (
-              <>
-                <Save className="w-4 h-4 mr-2" />
-                Create Invoice
-              </>
-            )}
-          </Button>
-        </div>
       </DialogContent>
     </Dialog>
   );
