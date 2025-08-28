@@ -1,11 +1,15 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { type InvoiceWithSupplierAndLines } from "@shared/schema";
+import NewInvoiceModal from "@/components/new-invoice-modal";
 import { Plus, FileText, Calendar, DollarSign } from "lucide-react";
 
 export default function Invoices() {
+  const [isNewInvoiceModalOpen, setIsNewInvoiceModalOpen] = useState(false);
+
   const { data: invoices, isLoading } = useQuery<InvoiceWithSupplierAndLines[]>({
     queryKey: ["/api/invoices"],
   });
@@ -51,7 +55,10 @@ export default function Invoices() {
           <h1 className="text-3xl font-bold text-foreground">Invoices</h1>
           <p className="text-muted-foreground">Manage and track all your invoices</p>
         </div>
-        <Button data-testid="button-add-invoice">
+        <Button 
+          onClick={() => setIsNewInvoiceModalOpen(true)}
+          data-testid="button-add-invoice"
+        >
           <Plus className="w-4 h-4 mr-2" />
           New Invoice
         </Button>
@@ -65,7 +72,10 @@ export default function Invoices() {
             <p className="text-muted-foreground text-center mb-4">
               Start by creating your first invoice from a supplier.
             </p>
-            <Button data-testid="button-create-first-invoice">
+            <Button 
+              onClick={() => setIsNewInvoiceModalOpen(true)}
+              data-testid="button-create-first-invoice"
+            >
               <Plus className="w-4 h-4 mr-2" />
               Create Invoice
             </Button>
@@ -143,6 +153,11 @@ export default function Invoices() {
           ))}
         </div>
       )}
+
+      <NewInvoiceModal
+        isOpen={isNewInvoiceModalOpen}
+        onClose={() => setIsNewInvoiceModalOpen(false)}
+      />
     </div>
   );
 }
