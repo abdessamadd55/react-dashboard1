@@ -55,16 +55,26 @@ export default function InvoiceForm({ supplier, onSubmit, onCancel }: InvoiceFor
   });
 
   const createInvoiceMutation = useMutation({
-    mutationFn: async (data: { invoice: any; invoiceLines: any[]; newItems: Item[] }) => {
-      // First, create any new items
+    mutationFn: async (data: { invoice: any; invoiceLines: any[]; newItems: Item[]; itemMapping: Map<string, string> }) => {
+      // First, create any new items and get their IDs
+      const createdItemIds = new Map<string, string>();
+      
       for (const item of data.newItems) {
-        await apiRequest("POST", "/api/items", item);
+        const response = await apiRequest("POST", "/api/items", item);
+        const createdItem = await response.json();
+        createdItemIds.set(item.id, createdItem.id);
       }
+
+      // Update invoice lines with actual item IDs
+      const updatedInvoiceLines = data.invoiceLines.map(line => ({
+        ...line,
+        itemId: createdItemIds.get(line.itemId) || line.itemId
+      }));
 
       // Then create the invoice with lines
       const response = await apiRequest("POST", "/api/invoices", {
         invoice: data.invoice,
-        invoiceLines: data.invoiceLines,
+        invoiceLines: updatedInvoiceLines,
       });
       return response.json();
     },
@@ -179,27 +189,36 @@ export default function InvoiceForm({ supplier, onSubmit, onCancel }: InvoiceFor
     // Identify new items and existing items
     const newItems: Item[] = [];
     const processedLines = [];
+    const itemMapping = new Map<string, string>();
 
     for (const line of invoiceLines) {
       if (!line.itemId) {
         // This is a new item
+        const newItemId = crypto.randomUUID();
         newItems.push({
-          id: crypto.randomUUID(),
+          id: newItemId,
           name: line.itemName,
           price: line.itemPrice,
         });
+        
+        processedLines.push({
+          quantity: line.quantity,
+          itemId: newItemId, // Will be replaced with actual DB ID after item creation
+        });
+      } else {
+        // This is an existing item
+        processedLines.push({
+          quantity: line.quantity,
+          itemId: line.itemId,
+        });
       }
-      
-      processedLines.push({
-        quantity: line.quantity,
-        itemId: line.itemId || crypto.randomUUID(), // Will be replaced with actual ID after item creation
-      });
     }
 
     createInvoiceMutation.mutate({
       invoice: data,
       invoiceLines: processedLines,
       newItems,
+      itemMapping,
     });
   };
 
