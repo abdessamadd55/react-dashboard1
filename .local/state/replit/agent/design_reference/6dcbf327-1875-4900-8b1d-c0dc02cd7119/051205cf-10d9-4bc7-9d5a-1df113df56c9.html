@@ -1,0 +1,673 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supplier & Invoice Management System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                borderRadius: {
+                    lg: "var(--radius)",
+                    md: "calc(var(--radius) - 2px)",
+                    sm: "calc(var(--radius) - 4px)",
+                },
+                colors: {
+                    background: "var(--background)",
+                    foreground: "var(--foreground)",
+                    card: {
+                        DEFAULT: "var(--card)",
+                        foreground: "var(--card-foreground)",
+                    },
+                    popover: {
+                        DEFAULT: "var(--popover)",
+                        foreground: "var(--popover-foreground)",
+                    },
+                    primary: {
+                        DEFAULT: "var(--primary)",
+                        foreground: "var(--primary-foreground)",
+                    },
+                    secondary: {
+                        DEFAULT: "var(--secondary)",
+                        foreground: "var(--secondary-foreground)",
+                    },
+                    muted: {
+                        DEFAULT: "var(--muted)",
+                        foreground: "var(--muted-foreground)",
+                    },
+                    accent: {
+                        DEFAULT: "var(--accent)",
+                        foreground: "var(--accent-foreground)",
+                    },
+                    destructive: {
+                        DEFAULT: "var(--destructive)",
+                        foreground: "var(--destructive-foreground)",
+                    },
+                    border: "var(--border)",
+                    input: "var(--input)",
+                    ring: "var(--ring)",
+                },
+                fontFamily: {
+                    sans: ["var(--font-sans)"],
+                }
+            },
+        }
+    };
+    </script>
+    <style>
+        :root {
+            --background: hsl(210 40% 98%);
+            --foreground: hsl(222.2 84% 4.9%);
+            --card: hsl(0 0% 100%);
+            --card-foreground: hsl(222.2 84% 4.9%);
+            --popover: hsl(0 0% 100%);
+            --popover-foreground: hsl(222.2 84% 4.9%);
+            --primary: hsl(221.2 83.2% 53.3%);
+            --primary-foreground: hsl(210 40% 98%);
+            --secondary: hsl(210 40% 96%);
+            --secondary-foreground: hsl(222.2 84% 4.9%);
+            --muted: hsl(210 40% 96%);
+            --muted-foreground: hsl(215.4 16.3% 46.9%);
+            --accent: hsl(210 40% 96%);
+            --accent-foreground: hsl(222.2 84% 4.9%);
+            --destructive: hsl(0 84.2% 60.2%);
+            --destructive-foreground: hsl(210 40% 98%);
+            --border: hsl(214.3 31.8% 91.4%);
+            --input: hsl(214.3 31.8% 91.4%);
+            --ring: hsl(221.2 83.2% 53.3%);
+            --radius: 0.5rem;
+            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        body {
+            font-family: var(--font-sans);
+        }
+        
+        .modal-backdrop {
+            backdrop-filter: blur(4px);
+        }
+        
+        .invoice-line-animation {
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .validation-error {
+            animation: shake 0.5s ease-in-out;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-background text-foreground">
+    <!-- @COMPONENT: AppLayout -->
+    <div class="min-h-screen flex">
+        <!-- @COMPONENT: Sidebar -->
+        <aside class="w-64 bg-card border-r border-border p-6">
+            <div class="mb-8">
+                <h1 class="text-xl font-bold text-primary flex items-center gap-2">
+                    <i class="fas fa-file-invoice-dollar"></i>
+                    InvoiceManager
+                </h1>
+                <p class="text-sm text-muted-foreground mt-1">Supplier & Invoice Management</p>
+            </div>
+            
+            <nav class="space-y-2">
+                <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-md bg-primary text-primary-foreground">
+                    <i class="fas fa-users w-4"></i>
+                    <span>Suppliers</span>
+                </a>
+                <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-md text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors">
+                    <i class="fas fa-file-invoice w-4"></i>
+                    <span>Invoices</span>
+                </a>
+                <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-md text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors">
+                    <i class="fas fa-box w-4"></i>
+                    <span>Items</span>
+                </a>
+                <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-md text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors">
+                    <i class="fas fa-chart-bar w-4"></i>
+                    <span>Reports</span>
+                </a>
+            </nav>
+        </aside>
+        <!-- @END_COMPONENT: Sidebar -->
+
+        <!-- @COMPONENT: MainContent -->
+        <main class="flex-1 overflow-hidden">
+            <!-- Header -->
+            <header class="bg-card border-b border-border px-6 py-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-2xl font-semibold">Suppliers</h2>
+                        <p class="text-muted-foreground">Manage your suppliers and their invoices</p>
+                    </div>
+                    <button class="bg-primary text-primary-foreground px-4 py-2 rounded-md hover:bg-primary/90 transition-colors flex items-center gap-2" data-event="click:openAddSupplierModal">
+                        <i class="fas fa-plus w-4"></i>
+                        Add Supplier
+                    </button>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <div class="p-6 overflow-y-auto h-full">
+                <!-- @COMPONENT: SupplierList -->
+                <div class="grid gap-6">
+                    <!-- @MAP: suppliers.map(supplier => ( -->
+                    <!-- @COMPONENT: SupplierCard -->
+                    <div class="bg-card rounded-lg border border-border p-6 shadow-sm">
+                        <div class="flex items-start justify-between mb-4">
+                            <div class="flex-1">
+                                <h3 class="text-lg font-semibold text-foreground" data-bind="supplier.name" data-mock="true">Matier Fer</h3>
+                                <div class="text-sm text-muted-foreground space-y-1 mt-2">
+                                    <div class="flex items-center gap-2">
+                                        <i class="fas fa-map-marker-alt w-4"></i>
+                                        <span data-bind="supplier.address" data-mock="true">123 Rue Hassan II, Casablanca</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <i class="fas fa-phone w-4"></i>
+                                        <span data-bind="supplier.phone" data-mock="true">+212612345678</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button class="bg-primary text-primary-foreground px-3 py-1 rounded-md text-sm hover:bg-primary/90 transition-colors" data-event="click:openAddInvoiceModal" data-implementation="Open modal to add new invoice for this supplier">
+                                    <i class="fas fa-plus w-3 mr-1"></i>
+                                    Add Invoice
+                                </button>
+                                <button class="text-muted-foreground hover:text-foreground transition-colors p-1">
+                                    <i class="fas fa-edit w-4"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Invoices List -->
+                        <div class="border-t border-border pt-4">
+                            <h4 class="font-medium mb-3 flex items-center gap-2">
+                                <i class="fas fa-file-invoice w-4"></i>
+                                Recent Invoices
+                                <span class="bg-muted text-muted-foreground px-2 py-0.5 rounded-full text-xs" data-bind="supplier.invoices.length" data-mock="true">3</span>
+                            </h4>
+                            
+                            <div class="space-y-2">
+                                <!-- @MAP: supplier.invoices.map(invoice => ( -->
+                                <div class="flex items-center justify-between p-3 bg-secondary rounded-md hover:bg-accent transition-colors cursor-pointer" data-event="click:viewInvoice">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                                            <i class="fas fa-file-invoice text-primary w-3"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium text-sm" data-bind="invoice.invoiceNumber" data-mock="true">INV-2025-001</p>
+                                            <p class="text-xs text-muted-foreground" data-bind="invoice.date" data-mock="true">Jan 15, 2025</p>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="font-semibold text-sm" data-bind="invoice.amount" data-mock="true">$1,500.75</p>
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-green-100 text-green-800">
+                                            Paid
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center justify-between p-3 bg-secondary rounded-md hover:bg-accent transition-colors cursor-pointer" data-event="click:viewInvoice">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                                            <i class="fas fa-file-invoice text-primary w-3"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium text-sm" data-mock="true">INV-2025-002</p>
+                                            <p class="text-xs text-muted-foreground" data-mock="true">Jan 18, 2025</p>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="font-semibold text-sm" data-mock="true">$3,250.00</p>
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-yellow-100 text-yellow-800">
+                                            Pending
+                                        </span>
+                                    </div>
+                                </div>
+                                <!-- @END_MAP )) -->
+                            </div>
+                            
+                            <button class="w-full mt-3 text-sm text-primary hover:text-primary/80 transition-colors" data-event="click:viewAllInvoices">
+                                View all invoices →
+                            </button>
+                        </div>
+                    </div>
+                    <!-- @END_COMPONENT: SupplierCard -->
+
+                    <!-- Second Supplier Card -->
+                    <div class="bg-card rounded-lg border border-border p-6 shadow-sm">
+                        <div class="flex items-start justify-between mb-4">
+                            <div class="flex-1">
+                                <h3 class="text-lg font-semibold text-foreground" data-mock="true">TechParts Morocco</h3>
+                                <div class="text-sm text-muted-foreground space-y-1 mt-2">
+                                    <div class="flex items-center gap-2">
+                                        <i class="fas fa-map-marker-alt w-4"></i>
+                                        <span data-mock="true">456 Boulevard Mohammed V, Rabat</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <i class="fas fa-phone w-4"></i>
+                                        <span data-mock="true">+212687654321</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button class="bg-primary text-primary-foreground px-3 py-1 rounded-md text-sm hover:bg-primary/90 transition-colors" data-event="click:openAddInvoiceModal">
+                                    <i class="fas fa-plus w-3 mr-1"></i>
+                                    Add Invoice
+                                </button>
+                                <button class="text-muted-foreground hover:text-foreground transition-colors p-1">
+                                    <i class="fas fa-edit w-4"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="border-t border-border pt-4">
+                            <h4 class="font-medium mb-3 flex items-center gap-2">
+                                <i class="fas fa-file-invoice w-4"></i>
+                                Recent Invoices
+                                <span class="bg-muted text-muted-foreground px-2 py-0.5 rounded-full text-xs" data-mock="true">1</span>
+                            </h4>
+                            
+                            <div class="space-y-2">
+                                <div class="flex items-center justify-between p-3 bg-secondary rounded-md hover:bg-accent transition-colors cursor-pointer" data-event="click:viewInvoice">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                                            <i class="fas fa-file-invoice text-primary w-3"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium text-sm" data-mock="true">INV-2025-003</p>
+                                            <p class="text-xs text-muted-foreground" data-mock="true">Jan 20, 2025</p>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="font-semibold text-sm" data-mock="true">$850.00</p>
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-red-100 text-red-800">
+                                            Overdue
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- @END_MAP )) -->
+                </div>
+                <!-- @END_COMPONENT: SupplierList -->
+            </div>
+        </main>
+        <!-- @END_COMPONENT: MainContent -->
+    </div>
+    <!-- @END_COMPONENT: AppLayout -->
+
+    <!-- @COMPONENT: AddInvoiceModal -->
+    <div id="addInvoiceModal" class="fixed inset-0 bg-black/50 modal-backdrop hidden z-50 flex items-center justify-center p-4" data-event="click:closeModal">
+        <div class="bg-card rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-hidden" data-event="click:stopPropagation">
+            <!-- Modal Header -->
+            <div class="flex items-center justify-between p-6 border-b border-border">
+                <div>
+                    <h3 class="text-lg font-semibold">Add New Invoice</h3>
+                    <p class="text-sm text-muted-foreground mt-1">Create an invoice for <span class="font-medium" data-bind="selectedSupplier.name" data-mock="true">Matier Fer</span></p>
+                </div>
+                <button class="text-muted-foreground hover:text-foreground transition-colors p-1" data-event="click:closeModal">
+                    <i class="fas fa-times w-5"></i>
+                </button>
+            </div>
+
+            <!-- Modal Content -->
+            <div class="overflow-y-auto max-h-[calc(90vh-140px)]">
+                <!-- @COMPONENT: InvoiceForm -->
+                <form class="p-6 space-y-6" data-event="submit:handleInvoiceSubmit">
+                    <!-- Invoice Details -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-foreground mb-2">Invoice Number</label>
+                            <input 
+                                type="text" 
+                                class="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent" 
+                                placeholder="INV-2025-004"
+                                data-bind="invoiceForm.invoiceNumber"
+                                data-mock="true"
+                            />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-foreground mb-2">Date</label>
+                            <input 
+                                type="date" 
+                                class="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+                                data-bind="invoiceForm.date"
+                            />
+                        </div>
+                    </div>
+
+                    <!-- Invoice Lines Section -->
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <h4 class="text-lg font-medium flex items-center gap-2">
+                                <i class="fas fa-list w-4"></i>
+                                Invoice Lines
+                            </h4>
+                            <button 
+                                type="button" 
+                                class="bg-secondary text-secondary-foreground px-3 py-1 rounded-md text-sm hover:bg-accent transition-colors flex items-center gap-2"
+                                data-event="click:addInvoiceLine"
+                                data-implementation="Add new invoice line to the form"
+                            >
+                                <i class="fas fa-plus w-3"></i>
+                                Add Line
+                            </button>
+                        </div>
+
+                        <!-- @COMPONENT: InvoiceLinesList -->
+                        <div class="space-y-3" id="invoiceLines">
+                            <!-- @MAP: invoiceForm.lines.map((line, index) => ( -->
+                            <!-- @COMPONENT: InvoiceLineForm -->
+                            <div class="border border-border rounded-lg p-4 bg-secondary/50 invoice-line-animation">
+                                <div class="flex items-start gap-4">
+                                    <div class="flex-1 grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
+                                        <!-- Item Selector -->
+                                        <div class="md:col-span-5">
+                                            <label class="block text-sm font-medium text-foreground mb-2">Item</label>
+                                            <!-- @COMPONENT: ItemSelector -->
+                                            <div class="relative">
+                                                <input 
+                                                    type="text" 
+                                                    class="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent pr-10" 
+                                                    placeholder="Search or enter item name..."
+                                                    data-bind="line.itemName"
+                                                    data-event="input:handleItemSearch"
+                                                    data-implementation="Real-time search for existing items"
+                                                    data-mock="true"
+                                                    value="Table en bois"
+                                                />
+                                                <div class="absolute right-3 top-1/2 transform -translate-y-1/2">
+                                                    <i class="fas fa-search text-muted-foreground w-4"></i>
+                                                </div>
+                                                
+                                                <!-- Item Suggestions Dropdown -->
+                                                <div class="absolute top-full left-0 right-0 bg-card border border-border rounded-md shadow-lg mt-1 z-10 hidden" data-state="itemSuggestions">
+                                                    <div class="max-h-40 overflow-y-auto">
+                                                        <div class="px-3 py-2 hover:bg-accent cursor-pointer text-sm border-b border-border last:border-b-0" data-event="click:selectItem">
+                                                            <div class="font-medium" data-mock="true">Table en bois</div>
+                                                            <div class="text-muted-foreground text-xs" data-mock="true">$750.00</div>
+                                                        </div>
+                                                        <div class="px-3 py-2 hover:bg-accent cursor-pointer text-sm border-b border-border last:border-b-0" data-event="click:selectItem">
+                                                            <div class="font-medium" data-mock="true">Chair en métal</div>
+                                                            <div class="text-muted-foreground text-xs" data-mock="true">$125.00</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="px-3 py-2 bg-muted text-sm text-center">
+                                                        <span class="text-muted-foreground">Type to create new item</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- @END_COMPONENT: ItemSelector -->
+                                        </div>
+
+                                        <!-- Price -->
+                                        <div class="md:col-span-3">
+                                            <label class="block text-sm font-medium text-foreground mb-2">Price</label>
+                                            <input 
+                                                type="number" 
+                                                step="0.01"
+                                                class="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent" 
+                                                placeholder="0.00"
+                                                data-bind="line.itemPrice"
+                                                data-event="input:updateLineTotal"
+                                                data-mock="true"
+                                                value="750.00"
+                                            />
+                                        </div>
+
+                                        <!-- Quantity -->
+                                        <div class="md:col-span-2">
+                                            <label class="block text-sm font-medium text-foreground mb-2">Qty</label>
+                                            <input 
+                                                type="number" 
+                                                min="1"
+                                                class="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent" 
+                                                placeholder="1"
+                                                data-bind="line.quantity"
+                                                data-event="input:updateLineTotal"
+                                                data-mock="true"
+                                                value="2"
+                                            />
+                                        </div>
+
+                                        <!-- Line Total -->
+                                        <div class="md:col-span-2">
+                                            <label class="block text-sm font-medium text-foreground mb-2">Total</label>
+                                            <div class="px-3 py-2 bg-muted rounded-md text-sm font-medium" data-bind="line.total" data-mock="true">
+                                                $1,500.00
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Remove Line Button -->
+                                    <button 
+                                        type="button" 
+                                        class="text-destructive hover:text-destructive/80 transition-colors p-2 self-end"
+                                        data-event="click:removeInvoiceLine"
+                                        data-implementation="Remove this invoice line from the form"
+                                    >
+                                        <i class="fas fa-trash w-4"></i>
+                                    </button>
+                                </div>
+
+                                <!-- Validation Messages -->
+                                <div class="mt-2 space-y-1">
+                                    <div class="flex items-center gap-2 text-sm text-green-700 bg-green-50 px-2 py-1 rounded" data-state="itemExists">
+                                        <i class="fas fa-check-circle w-3"></i>
+                                        <span>Item exists in database</span>
+                                    </div>
+                                    <div class="flex items-center gap-2 text-sm text-blue-700 bg-blue-50 px-2 py-1 rounded hidden" data-state="newItem">
+                                        <i class="fas fa-plus-circle w-3"></i>
+                                        <span>New item will be created</span>
+                                    </div>
+                                    <div class="flex items-center gap-2 text-sm text-red-700 bg-red-50 px-2 py-1 rounded hidden validation-error" data-state="duplicateItem">
+                                        <i class="fas fa-exclamation-triangle w-3"></i>
+                                        <span>Duplicate item detected in this invoice</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- @END_COMPONENT: InvoiceLineForm -->
+
+                            <!-- Second Line Example -->
+                            <div class="border border-border rounded-lg p-4 bg-secondary/50">
+                                <div class="flex items-start gap-4">
+                                    <div class="flex-1 grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
+                                        <div class="md:col-span-5">
+                                            <label class="block text-sm font-medium text-foreground mb-2">Item</label>
+                                            <div class="relative">
+                                                <input 
+                                                    type="text" 
+                                                    class="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent pr-10" 
+                                                    placeholder="Search or enter item name..."
+                                                    data-mock="true"
+                                                    value="Wooden Desk Lamp"
+                                                />
+                                                <div class="absolute right-3 top-1/2 transform -translate-y-1/2">
+                                                    <i class="fas fa-search text-muted-foreground w-4"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="md:col-span-3">
+                                            <label class="block text-sm font-medium text-foreground mb-2">Price</label>
+                                            <input 
+                                                type="number" 
+                                                step="0.01"
+                                                class="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent" 
+                                                data-mock="true"
+                                                value="85.00"
+                                            />
+                                        </div>
+                                        <div class="md:col-span-2">
+                                            <label class="block text-sm font-medium text-foreground mb-2">Qty</label>
+                                            <input 
+                                                type="number" 
+                                                min="1"
+                                                class="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent" 
+                                                data-mock="true"
+                                                value="3"
+                                            />
+                                        </div>
+                                        <div class="md:col-span-2">
+                                            <label class="block text-sm font-medium text-foreground mb-2">Total</label>
+                                            <div class="px-3 py-2 bg-muted rounded-md text-sm font-medium" data-mock="true">
+                                                $255.00
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button 
+                                        type="button" 
+                                        class="text-destructive hover:text-destructive/80 transition-colors p-2 self-end"
+                                    >
+                                        <i class="fas fa-trash w-4"></i>
+                                    </button>
+                                </div>
+                                <div class="mt-2">
+                                    <div class="flex items-center gap-2 text-sm text-blue-700 bg-blue-50 px-2 py-1 rounded">
+                                        <i class="fas fa-plus-circle w-3"></i>
+                                        <span>New item will be created</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- @END_MAP )) -->
+                        </div>
+                        <!-- @END_COMPONENT: InvoiceLinesList -->
+
+                        <!-- Invoice Total -->
+                        <div class="border-t border-border pt-4">
+                            <div class="flex justify-end">
+                                <div class="bg-card border border-border rounded-lg p-4 min-w-64">
+                                    <div class="space-y-2">
+                                        <div class="flex justify-between text-sm">
+                                            <span class="text-muted-foreground">Subtotal:</span>
+                                            <span data-bind="invoiceForm.subtotal" data-mock="true">$1,755.00</span>
+                                        </div>
+                                        <div class="flex justify-between text-sm">
+                                            <span class="text-muted-foreground">Tax (20%):</span>
+                                            <span data-bind="invoiceForm.tax" data-mock="true">$351.00</span>
+                                        </div>
+                                        <div class="border-t border-border pt-2">
+                                            <div class="flex justify-between font-semibold text-lg">
+                                                <span>Total:</span>
+                                                <span data-bind="invoiceForm.total" data-mock="true">$2,106.00</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <!-- @END_COMPONENT: InvoiceForm -->
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="flex items-center justify-end gap-3 p-6 border-t border-border bg-muted/30">
+                <button 
+                    type="button" 
+                    class="px-4 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    data-event="click:closeModal"
+                >
+                    Cancel
+                </button>
+                <button 
+                    type="submit" 
+                    class="bg-primary text-primary-foreground px-6 py-2 rounded-md hover:bg-primary/90 transition-colors flex items-center gap-2"
+                    data-event="click:submitInvoice"
+                    data-implementation="Validate and submit invoice, create new items if needed"
+                >
+                    <i class="fas fa-save w-4"></i>
+                    Create Invoice
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: AddInvoiceModal -->
+
+    <script>
+        // TODO: Implement React component logic with hooks
+        // TODO: Add state management for suppliers, invoices, and items
+        // TODO: Implement real-time item validation
+        // TODO: Add form submission handling
+        // TODO: Connect to backend API for data persistence
+
+        (() => {
+            // Modal management for demonstration
+            const addInvoiceButtons = document.querySelectorAll('[data-event="click:openAddInvoiceModal"]');
+            const modal = document.getElementById('addInvoiceModal');
+            const closeButtons = document.querySelectorAll('[data-event="click:closeModal"]');
+
+            addInvoiceButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    modal.classList.remove('hidden');
+                });
+            });
+
+            closeButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    modal.classList.add('hidden');
+                });
+            });
+
+            // Close modal when clicking backdrop
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.add('hidden');
+                }
+            });
+
+            // Prevent modal close when clicking inside
+            modal.querySelector('.bg-card').addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+
+            // Simulate add invoice line functionality
+            const addLineButton = document.querySelector('[data-event="click:addInvoiceLine"]');
+            if (addLineButton) {
+                addLineButton.addEventListener('click', () => {
+                    // TODO: Implement dynamic invoice line creation
+                    console.log('Add new invoice line');
+                });
+            }
+
+            // Simulate item search functionality
+            const itemInputs = document.querySelectorAll('[data-event="input:handleItemSearch"]');
+            itemInputs.forEach(input => {
+                input.addEventListener('input', () => {
+                    // TODO: Implement real-time item search and validation
+                    console.log('Search items:', input.value);
+                });
+            });
+
+            // Simulate total calculation
+            const quantityInputs = document.querySelectorAll('[data-event="input:updateLineTotal"]');
+            quantityInputs.forEach(input => {
+                input.addEventListener('input', () => {
+                    // TODO: Implement real-time total calculation
+                    console.log('Update totals');
+                });
+            });
+        })();
+    </script>
+</body>
+</html>
