@@ -1,0 +1,32 @@
+# This file should be placed in the root of your project:
+# c:\Users\PC\Documents\react\dashboards\InvoiceFlow\netlify.toml
+
+[build]
+  # This is the command Netlify will run to build your site.
+  # It should build your React client.
+  # Make sure you have a "build" script in your root package.json
+  # that correctly builds the client, for example: "npm run build --prefix client"
+  command = "npm run build"
+
+  # This is the directory that contains your built frontend.
+  # For a Vite React app in the 'client' folder, this is typically 'client/dist'.
+  # Please verify this path in your client's vite.config.js.
+  publish = "client/dist"
+
+  # The directory where your serverless functions are located.
+  functions = "netlify/functions"
+
+# Redirects for API and client-side routing
+[[redirects]]
+  # Proxy API requests to your serverless function.
+  from = "/api/*"
+  to = "/.netlify/functions/api/:splat"
+  status = 200
+
+[[redirects]]
+  # Fallback for Single Page App (SPA) routing.
+  # This ensures that refreshing on a client-side route works.
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
